@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<VBox fx:controller="woj.GameController" 
+    xmlns:fx="http://javafx.com/fxml" spacing="20"
+    styleClass="root">
+       
+    <HBox id="maintop" alignment="center">
+    	<BorderPane id="topleft">
+    		<padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+    		<top>
+    			<Text id="titletext" text="Wheel of Jeopardy!" BorderPane.alignment="CENTER">
+    				<font><Font size="36"/></font>
+    			</Text>
+    		</top>
+    		<left>
+    			<VBox id="spins" alignment="center" prefWidth="60">
+    				<Text id="spinscountlabel" text="Spins">
+    					<font><Font size="20"/></font>
+    				</Text>
+    				<Text fx:id="spinscount" text="50">
+    					<font><Font size="30"/></font>
+    				</Text>
+    			</VBox>
+    		</left>
+    		<center>
+    			<StackPane fx:id="wheelpane" prefHeight="400" prefWidth="400">
+    				
+    			</StackPane>
+    		</center>
+    		<right>
+    			<VBox id="blank" alignment="center" prefWidth="60">
+    			</VBox>
+    		</right>
+    	</BorderPane>
+    	<StackPane fx:id="jeopardyboard">
+    		<padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+    		<GridPane fx:id="gridboard" hgap="10" vgap="10">
+    		</GridPane>
+    		<Button fx:id="questiontext">
+    		</Button>
+    	</StackPane>
+    </HBox>
+    <VBox id="mainbottom" alignment="center" spacing="50">
+    	<HBox id="messageandtimer" alignment="center" spacing="20">
+    		<TextField fx:id="messagebox" prefWidth="1000" prefHeight="50">
+    			<font><Font size="20"/></font>
+    		</TextField>
+    		<VBox id="timer" alignment="center" >
+				<Text id="timerlabel" text="Time Left">
+					<font><Font size="20"/></font>
+				</Text>
+				<Text fx:id="timercount" text="30">
+					<font><Font size="30"/></font>
+				</Text>
+			</VBox>
+    	</HBox>
+    	<HBox id="players" spacing="175" alignment="center">
+    		<VBox id="player1" spacing="5" alignment="center">
+    			<Button fx:id="player1name">
+    			</Button>
+    			<Button fx:id="player1score">
+    			</Button>
+    		</VBox>
+    		<VBox id="player2" spacing="5" alignment="center">
+    			<Button fx:id="player2name">
+    			</Button>
+    			<Button fx:id="player2score">
+    			</Button>
+    		</VBox>
+    		<VBox id="player3" spacing="5" alignment="center">
+    			<Button fx:id="player3name">
+    			</Button>
+    			<Button fx:id="player3score">
+    			</Button>
+    		</VBox>
+    	</HBox>
+	</VBox>
+    
+    <stylesheets>
+      <URL value="@WOJ.css" />
+    </stylesheets>
+
+</VBox>
+    	
+
+        
+
+
