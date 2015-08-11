@@ -1,2 +1,4 @@
 # WheelOfJeopardy
-Wheel of Jeopardy Repository
+Wheel of Jeopardy Game Repository
+
+
