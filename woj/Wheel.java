@@ -6,12 +6,12 @@ import javafx.animation.RotateTransition;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 /*
@@ -22,11 +22,19 @@ public class Wheel {
 	private Sector[] sectors;
 	private WheelViz wheelViz;
 	
+	//Sector IDs
+	public static final int PLAYER_CHOICE = 6;
+	public static final int OPPONENT_CHOICE = 7;
+	public static final int BANKRUPT = 8;
+	public static final int LOSE_TURN = 9;
+	public static final int SPIN_AGAIN = 10;
+	public static final int FREE_TURN = 11;
+	
 	/*
 	 * Create a new Wheel using the category names provided
 	 * param: catNames - The category names for this round
 	 */
-	public Wheel(String[] catNames, Object context) {
+	public Wheel(String[] catNames, Object context, EventHandler<ActionEvent> afterSpinEvent) {
 		//The angle starts at 15 because of the way the wheel is drawn
 		angle = 15;		
 		sectors = new Sector[12];
@@ -73,32 +81,29 @@ public class Wheel {
 			System.out.println(sectors[i].getLabel() + " is at sector # " + i + " with ID " + sectors[i].getID());
 		}
 		
-		wheelViz = new JavaFXWheelViz(context);		
+		wheelViz = new JavaFXWheelViz(context, afterSpinEvent);		
 	}
 	
 	/*
 	 * Spin the wheel and return a int representing the sector that was landed on
 	 */
-	public int spin() {
-		System.out.println("Wheel angle before spinning: " + angle);
+	public void spin() {
 		
 		int spinAngle = (int) (Math.random() * 360 + 360);
-		
-		System.out.println("Wheel spun " + spinAngle + " degrees");
-		
-		wheelViz.spinWheel(spinAngle);
-		
 		angle = (angle + spinAngle) % 360;
 		
-		System.out.println("Wheel angle after spinning: " + angle);
+		//start animation
+		wheelViz.spinWheel(spinAngle);
+	}
+	
+	public int getCurrentSector() {
 		
 		int sectorNum = angle / 30;
 		
-		System.out.println("Sector #" + sectorNum);
-		System.out.println("Sector ID " + sectors[sectorNum].getID() + " returned.");
+		//System.out.println("Sector #" + sectorNum);
+		//System.out.println("Sector ID " + sectors[sectorNum].getID() + " returned.");
 		
 		return sectors[sectorNum].getID();
-		
 	}
 	
 	/*
@@ -118,12 +123,14 @@ public class Wheel {
 		private StackPane wheelPane;
 		private Canvas wheelCanvas;
 		private Canvas pointerCanvas;
-		
+		private EventHandler<ActionEvent> afterSpin;
 		/*
 		 * Construct a wheel in a given StackPane
 		 */
-		public JavaFXWheelViz(Object pane) {
+		public JavaFXWheelViz(Object pane, EventHandler<ActionEvent> afterSpinEvent) {
 			wheelPane = (StackPane) pane;			
+			afterSpin = afterSpinEvent;
+			
 			int smallerDimension = 400; //should be based on pane size, but didn't work for some reason
 			wheelCanvas = new Canvas(smallerDimension, smallerDimension); 
 			wheelCanvas.getGraphicsContext2D().translate(smallerDimension / 2, smallerDimension / 2);
@@ -137,13 +144,14 @@ public class Wheel {
 			
 			drawWheel((int) (smallerDimension / 2 * 0.95));
 			
-			//Set up event handlers
-			
+			//Set up event handler for clicking on the Wheel (not currently being used)
+			/*
 			wheelPane.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent event) {
 	                spin();
 	            }
 			});
+			*/
 		}
 		
 		/*
@@ -223,6 +231,7 @@ public class Wheel {
 			
 			RotateTransition rt = new RotateTransition(Duration.millis(spinAngle * 2), wheelCanvas);
 			rt.setByAngle(spinAngle);
+			rt.setOnFinished(afterSpin);
 			
 			//Delay the spin by .4 seconds
 			//rt.setDelay(Duration.millis(400));
