@@ -24,7 +24,7 @@
     				<Text id="spinscountlabel" text="Spins">
     					<font><Font size="20"/></font>
     				</Text>
-    				<Text fx:id="spinscount" text="50">
+    				<Text fx:id="spinscount">
     					<font><Font size="30"/></font>
     				</Text>
     			</VBox>
