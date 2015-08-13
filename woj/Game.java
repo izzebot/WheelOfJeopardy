@@ -81,15 +81,9 @@ public class Game {
 		
 		//Temporarily set spinsRemaining to 5 for testing purposes. This would normally be set to 50. 
 		spinsRemaining = 5;
-<<<<<<< HEAD
-		
+
 		displayMessage("Round " + round, "Let's begin!");
-		
-=======
-		
-		displayMessage("Round " + round, "Let's begin!");
-		
->>>>>>> origin/master
+
 		//Initiate the first turn
 		beginPlayerTurn();
 	
@@ -253,7 +247,6 @@ public class Game {
 		}
 		else { 
 			//Tell the player that the answer is incorrect and announce the correct answer.
-<<<<<<< HEAD
 			//Check if the answer was close enough to count as correct.
 			
 			boolean closeEnough = gameViz.closeEnough(currentItem.getAnswer());
@@ -265,9 +258,6 @@ public class Game {
 			else {
 				players[whoseTurn].updatePoints(0-currentItem.getPointValue());
 			}
-=======
-			displayMessage("Sorry that is incorrect", "The correct answer was \"" + currentItem.getAnswer() + "\"");
->>>>>>> origin/master
 			
 		}
 		
@@ -421,7 +411,6 @@ public class Game {
 	 */
 	private void displayMessage(String message) {
 		gameViz.displayMessage(message, "");
-<<<<<<< HEAD
 	}
 	
 	/*
@@ -431,8 +420,6 @@ public class Game {
 	 */
 	private void displayMessage(String mainMessage, String secondaryMessage) {
 		gameViz.displayMessage(mainMessage, secondaryMessage);
-=======
->>>>>>> origin/master
 	}
 	
 	/*
@@ -533,7 +520,6 @@ public class Game {
 			return answerField.getText();
 		}
 
-<<<<<<< HEAD
 	/*
 	 * An interface that must be implemented by a visualization of the WOJ Game
 	 */
@@ -624,8 +610,6 @@ public class Game {
 			return answerField.getText();
 		}
 
-=======
->>>>>>> origin/master
 		/*
 		 * Ask a player for a category from the ones with items remaining
 		 * 
@@ -703,7 +687,6 @@ public class Game {
 			}
 			
 		}
-<<<<<<< HEAD
 
 		/*
 		 * Return true if the players's agree that the answer was close enough to being correct to count.
@@ -727,9 +710,6 @@ public class Game {
 			else {
 				return false;
 			}
-		}
-=======
->>>>>>> origin/master
-		
+		}		
 	}
 }
