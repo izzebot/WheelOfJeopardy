@@ -50,10 +50,14 @@ public class JeopardyBoard {
 				//One line contains an answer and question
 				String line = inFile.nextLine();
 				
+				System.out.println(line);
+				
 				//The answer and question can be split at the "?"
 				String[] fields = line.split("\\?");
 				
+				
 				String answer = fields[0].trim().toUpperCase() + "?";
+				
 				String question = fields[1].trim().toUpperCase();
 				
 				//Point values double for the second round
@@ -134,12 +138,27 @@ public class JeopardyBoard {
 	}
 	
 	/*
+	 * Return a list with the names of the categories that still have items available on the board
+	 */
+	public ArrayList<String> getActiveCategories() {
+		//Figure out how many categories are still active
+		ArrayList<String> catList = new ArrayList<String>();
+		
+		for (Category cat : categories) {
+			if (cat.isUsedUp() == false) {
+				catList.add(cat.getName());
+			}
+		}
+		
+		return catList;
+	}
+	
+	/*
 	 * This interface must be implemented by the class that is used to visualize the JeopardyBoard
 	 */
 	interface JeopardyBoardViz {
 		public void showQuestion(String question);
-		public void showGrid();
-		
+		public void showGrid();		
 	}
 	
 	/*
@@ -153,10 +172,18 @@ public class JeopardyBoard {
 
 		public JavaFXJeopardyBoardViz(Object pane) {
 			mainBoardPane = (StackPane) pane;
+			mainBoardPane.getChildren().clear();
 			
-			gridPane = (GridPane) mainBoardPane.getScene().lookup("#gridboard");
+			//Create and add children of mainBoardPane
+			gridPane = new GridPane();
+			gridPane.setHgap(10);
+			gridPane.setVgap(10);
+			questionText = new Button("");
+			mainBoardPane.getChildren().addAll(gridPane, questionText);
 			
-			questionText = (Button) mainBoardPane.getScene().lookup("#questiontext");
+			System.out.println("StackPane contents after adding all: " + mainBoardPane.getChildren().toString());
+			gridPane.toString();
+			
 			questionText.setMaxWidth(Double.MAX_VALUE);
 			questionText.setMaxHeight(Double.MAX_VALUE);
 			questionText.setWrapText(true);
@@ -201,11 +228,15 @@ public class JeopardyBoard {
 					itemButtons[itemIndex][categoryIndex] = new JeopardyItemButton(categories.get(categoryIndex).getBoardItem(itemIndex));
 					itemButtons[itemIndex][categoryIndex].setMaxWidth(Double.MAX_VALUE);
 					itemButtons[itemIndex][categoryIndex].setMaxHeight(Double.MAX_VALUE);
-					itemButtons[itemIndex][categoryIndex].setStyle("-fx-text-fill: gold; -fx-font-size: 28px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
+					itemButtons[itemIndex][categoryIndex].setStyle("-fx-text-fill: gold; -fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
 					gridPane.add(itemButtons[itemIndex][categoryIndex], categoryIndex, itemIndex + 1);
+					categories.get(categoryIndex).getBoardItem(itemIndex).setViz(itemButtons[itemIndex][categoryIndex]);
 				}
 				
 			}
+			
+			System.out.println("GridPane after adding new items: " +  gridPane.getChildren().toString());
+			
 
 		}
 		
@@ -226,7 +257,8 @@ public class JeopardyBoard {
 			gridPane.setVisible(true);
 			
 		}
-		
+
+
 		
 	}
 	

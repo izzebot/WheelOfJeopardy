@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<VBox fx:controller="woj.EnterPlayersController" 
+    xmlns:fx="http://javafx.com/fxml" alignment="center" 
+   spacing="100"
+    styleClass="root">
+       
+    <HBox id="title" alignment="center">
+    	<Text id="titleText" text="Wheel of Jeopardy!">
+    		<font><Font size="100"/></font>
+    	</Text>
+    </HBox>
+    <VBox id="playerNamesBox" alignment="center" spacing="10">
+    	<Label id="instructions" text="Enter your names:"/>
+    	<HBox id="player1NameBox" alignment="center">
+    		<Label id="player1Label" text="Player 1 "/>
+    		<TextField fx:id="player1Box"/>  	
+    	</HBox>
+    	<HBox id="player2NameBox" alignment="center">
+    		<Label id="player2Label" text="Player 2 "/>
+    		<TextField fx:id="player2Box"/>
+    	</HBox>
+    	<HBox id="player3NameBox" alignment="center">
+    		<Label id="player1Labe3" text="Player 3 "/>
+    		<TextField fx:id="player3Box"/>
+    	</HBox>
+    	<Button id="play" text="Play" prefWidth="100" prefHeight="40">
+    	</Button>
+    </VBox>
+    
+    <stylesheets>
+      <URL value="@EnterPlayers.css" />
+    </stylesheets>
+
+</VBox>
+    	
+
+        
+
+
