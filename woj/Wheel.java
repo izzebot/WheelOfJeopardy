@@ -233,6 +233,7 @@ public class Wheel {
 			
 			RotateTransition rt = new RotateTransition(Duration.millis(spinAngle * 2), wheelCanvas);
 			rt.setByAngle(spinAngle);
+			rt.setOnFinished(afterSpin);
 			
 			
 			SequentialTransition rtWithPause = new SequentialTransition (
