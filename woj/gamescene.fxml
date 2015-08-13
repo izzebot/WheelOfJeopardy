@@ -41,10 +41,12 @@
     	</BorderPane>
     	<StackPane fx:id="jeopardyboard">
     		<padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+    		<!--
     		<GridPane fx:id="gridboard" hgap="10" vgap="10">
     		</GridPane>
     		<Button fx:id="questiontext">
     		</Button>
+    		-->
     	</StackPane>
     </HBox>
     <VBox id="mainbottom" alignment="center" spacing="50">

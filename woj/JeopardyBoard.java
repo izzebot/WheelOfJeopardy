@@ -172,22 +172,18 @@ public class JeopardyBoard {
 
 		public JavaFXJeopardyBoardViz(Object pane) {
 			mainBoardPane = (StackPane) pane;
+			mainBoardPane.getChildren().clear();
 			
-			gridPane = (GridPane) mainBoardPane.getScene().lookup("#gridboard");
-			gridPane.getChildren().clear();
-			
-			System.out.println("GridPane before adding new items: " + gridPane.getChildren().toString());
-			gridPane.toString();
-			
-			/*None of this helped
-			//Make sure you are starting with an empty grid pane
-			gridPane.getChildren().clear();
-			
+			//Create and add children of mainBoardPane
+			gridPane = new GridPane();
 			gridPane.setHgap(10);
 			gridPane.setVgap(10);
-			*/
-						
-			questionText = (Button) mainBoardPane.getScene().lookup("#questiontext");
+			questionText = new Button("");
+			mainBoardPane.getChildren().addAll(gridPane, questionText);
+			
+			System.out.println("StackPane contents after adding all: " + mainBoardPane.getChildren().toString());
+			gridPane.toString();
+			
 			questionText.setMaxWidth(Double.MAX_VALUE);
 			questionText.setMaxHeight(Double.MAX_VALUE);
 			questionText.setWrapText(true);
@@ -232,7 +228,7 @@ public class JeopardyBoard {
 					itemButtons[itemIndex][categoryIndex] = new JeopardyItemButton(categories.get(categoryIndex).getBoardItem(itemIndex));
 					itemButtons[itemIndex][categoryIndex].setMaxWidth(Double.MAX_VALUE);
 					itemButtons[itemIndex][categoryIndex].setMaxHeight(Double.MAX_VALUE);
-					itemButtons[itemIndex][categoryIndex].setStyle("-fx-text-fill: gold; -fx-font-size: 28px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
+					itemButtons[itemIndex][categoryIndex].setStyle("-fx-text-fill: gold; -fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
 					gridPane.add(itemButtons[itemIndex][categoryIndex], categoryIndex, itemIndex + 1);
 					categories.get(categoryIndex).getBoardItem(itemIndex).setViz(itemButtons[itemIndex][categoryIndex]);
 				}
