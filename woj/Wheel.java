@@ -78,10 +78,6 @@ public class Wheel {
 		sectorNum = sectorLocations.remove((int) (Math.random() * sectorLocations.size()));
 		sectors[sectorNum] = new Sector("FREE TURN", Color.web("#00FF33"), 11);
 		
-		// For debugging the wheel - shows sector data 
-		for (int i=0; i<=11; i++) {
-			System.out.println(sectors[i].getLabel() + " is at sector # " + i + " with ID " + sectors[i].getID());
-		}
 		
 		wheelViz = new JavaFXWheelViz(context, afterSpinEvent);		
 	}
@@ -101,9 +97,6 @@ public class Wheel {
 	public int getCurrentSector() {
 		
 		int sectorNum = angle / 30;
-		
-		//System.out.println("Sector #" + sectorNum);
-		//System.out.println("Sector ID " + sectors[sectorNum].getID() + " returned.");
 		
 		return sectors[sectorNum].getID();
 	}
@@ -233,7 +226,6 @@ public class Wheel {
 			
 			RotateTransition rt = new RotateTransition(Duration.millis(spinAngle * 2), wheelCanvas);
 			rt.setByAngle(spinAngle);
-			rt.setOnFinished(afterSpin);
 			
 			
 			SequentialTransition rtWithPause = new SequentialTransition (

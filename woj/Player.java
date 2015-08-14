@@ -46,13 +46,17 @@ public class Player {
 	}
 	
 	/*
-	 * Set the round points to 0 and correctly update the total points as well.
+	 * Set the round points to 0
 	 * This also updates the round points to 0 in the GUI
 	 */
 	public void clearRoundPoints() {
-		totalPoints -= roundPoints;
 		roundPoints = 0;
 		playerViz.updateScore(0);
+	}
+	
+	public void goBankrupt() {
+		totalPoints -= roundPoints;
+		clearRoundPoints();
 	}
 	
 	/*

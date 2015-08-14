@@ -13,6 +13,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class WOJTestCode extends Application {
@@ -72,6 +74,10 @@ public class WOJTestCode extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			Text title = (Text) root.lookup("#titletext");
+			
+			title.setStyle("-fx-font-size: 50px; -fx-fill: #818181; -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 )");
 			
 			Scene mainScene = new Scene(root, 1200, 800);
 			stage.setScene(mainScene);

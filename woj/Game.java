@@ -26,7 +26,7 @@ public class Game {
 	private int round;
 	private int spinsRemaining;
 	private BoardItem currentItem;
-	
+	private GameTimer timer;
 	private WOJGameViz gameViz;
 	
 	public Game(String[] names, Parent root) {
@@ -35,7 +35,6 @@ public class Game {
 		players = new Player[3];
 		
 		//Create the three players using the names entered
-		System.out.println(gameViz.getPlayerContext(0));
 		players[0] = new Player(names[0], gameViz.getPlayerContext(0));
 		players[1] = new Player(names[1], gameViz.getPlayerContext(1));
 		players[2] = new Player(names[2], gameViz.getPlayerContext(2));
@@ -45,6 +44,8 @@ public class Game {
 		
 		round = 1;
 		spinsRemaining = 50;
+		timer = new GameTimer(30, gameViz.getTimerContext(), new AnswerHandler());
+		
 		gameViz.updateSpinsRemaining(spinsRemaining);
 		
 	}
@@ -79,11 +80,16 @@ public class Game {
 		
 		wheel = new Wheel(board.getCategoryNames(), gameViz.getWheelVizContext(), new SpinHandler());
 		
-		//Temporarily set spinsRemaining to 5 for testing purposes. This would normally be set to 50. 
-		spinsRemaining = 5;
-
+		spinsRemaining = 10;
+		gameViz.updateSpinsRemaining(spinsRemaining);
+		
+		//Clear everybody's round points
+		for (Player player : players) {
+			player.clearRoundPoints();
+		}
+		
 		displayMessage("Round " + round, "Let's begin!");
-
+		
 		//Initiate the first turn
 		beginPlayerTurn();
 	
@@ -97,7 +103,6 @@ public class Game {
 		
 		displayMessage(players[whoseTurn].getName() + ", spin the wheel!");
 		
-		decreaseSpinsByOne();
 		wheel.spin();
 	}
 	
@@ -115,6 +120,8 @@ public class Game {
 	 * Process a spin after the wheel has been spun.
 	 */
 	private void processSpin() {
+		decreaseSpinsByOne();
+		
 		int spinResult = wheel.getCurrentSector();
 		
 		if ((spinResult == Wheel.SPIN_AGAIN || spinResult == Wheel.FREE_TURN || (spinResult < 6 && board.isCategoryUsedUp(spinResult)))) {
@@ -129,7 +136,6 @@ public class Game {
 				//Display a "SPIN AGAIN" message
 				displayMessage(players[whoseTurn].getName() + ", spin again!");
 				
-				decreaseSpinsByOne();
 				wheel.spin();
 			}
 			else {
@@ -166,7 +172,7 @@ public class Game {
 				gameViz.askForAnswer();
 				
 				//Start the timer
-				//to be implemented
+				timer.countDown();
 				
 			} else { //deal with other wheel sectors besides categories and category choices
 				if (spinResult == Wheel.BANKRUPT) {
@@ -180,7 +186,7 @@ public class Game {
 						displayMessage("You went bankrupt.", "No harm done this time.");
 					}
 					
-					players[whoseTurn].clearRoundPoints();	
+					players[whoseTurn].goBankrupt();	
 					
 					//Update that it is now the next player's turn
 					moveTurnToNextPlayer();
@@ -198,22 +204,26 @@ public class Game {
 	}
 	
 	private void checkForFreeTurn() {
-		//Check if the current player has a free turn to use
-		if (players[whoseTurn].getFreeTurns() > 0) {
-			//Ask if the current player wants to use a free turn
-			System.out.println("Asking user if going to use a free turn");
-			if (gameViz.playerWantsFreeTurn()) {
-				players[whoseTurn].updateFreeTurns(-1);
-				beginPlayerTurn();
+		if (roundIsOver()) {
+			endRound();
+		}
+		else {
+			//Check if the current player has a free turn to use
+			if (players[whoseTurn].getFreeTurns() > 0) {
+				//Ask if the current player wants to use a free turn
+				if (gameViz.playerWantsFreeTurn()) {
+					players[whoseTurn].updateFreeTurns(-1);
+					beginPlayerTurn();
+				}
+				else {
+					//Update that it is now the next player's turn
+					moveTurnToNextPlayer();
+				}
 			}
 			else {
 				//Update that it is now the next player's turn
 				moveTurnToNextPlayer();
 			}
-		}
-		else {
-			//Update that it is now the next player's turn
-			moveTurnToNextPlayer();
 		}
 		
 	}
@@ -225,11 +235,14 @@ public class Game {
 		}	
 	}
 	
+	
+	
 	/*
 	 * Ask the current player the next question from the category. Update the points based on the answer.
 	 * Return true if answered correctly. Otherwise return false.
 	 */
 	private void processAnswer(String playerAnswer) {
+		timer.cancel();
 		
 		playerAnswer = playerAnswer.trim().toUpperCase();
 		
@@ -241,7 +254,7 @@ public class Game {
 			players[whoseTurn].updatePoints(currentItem.getPointValue());
 			correct = true;
 		}
-		else if (currentItem.getAnswer().equals("")) {
+		else if (playerAnswer.length() == 0) {
 			//Tell the player the correct answer
 			displayMessage("The correct answer was \"" + currentItem.getAnswer() + "\"");
 		}
@@ -269,7 +282,8 @@ public class Game {
 		
 		board.showJeopardyBoard();
 		
-		//Reset the timer - not implemented yet
+		//Reset the timer
+		timer.reset();
 		
 		if (correct && roundIsOver() == false) {
 			beginPlayerTurn();
@@ -316,9 +330,9 @@ public class Game {
 	 * If it is not, set the player turn to the next player.
 	 */
 	private void moveTurnToNextPlayer() {
+		players[whoseTurn].removePlayerActive();
+		whoseTurn = (whoseTurn + 1) % 3;
 		if (roundIsOver() == false) {
-			players[whoseTurn].removePlayerActive();
-			whoseTurn = (whoseTurn + 1) % 3;
 			beginPlayerTurn();
 		} else {
 			//end the current round
@@ -363,7 +377,11 @@ public class Game {
 	private String getWinnerMessage() {
 		int winner = -1;
 		
-		String winnerMessage;
+		String winnerMessage = "Final Scores:\n";
+		
+		for (Player player : players) {
+			winnerMessage += player.getName() + ": " + player.getTotalPoints() + "\n";
+		}
 		
 		//Determine who has the highest score
 		if (players[0].getTotalPoints() > players[1].getTotalPoints()) {
@@ -385,18 +403,18 @@ public class Game {
 		//Deal with a tie
 		if (winner == -1) {
 			if (players[0].getTotalPoints() == players[1].getTotalPoints() && players[0].getTotalPoints() == players[2].getTotalPoints()) {
-				winnerMessage = "You all tied!";
+				winnerMessage += "You all tied!";
 			} else if (players[0].getTotalPoints() == players[1].getTotalPoints()) {
-				winnerMessage = "The winners are " + players[0].getName() + " and " + players[1].getName() + "!";
+				winnerMessage += "The winners are " + players[0].getName() + " and " + players[1].getName() + "!";
 			} else if (players[0].getTotalPoints() == players[2].getTotalPoints()) {
-				winnerMessage = "The winners are " + players[0].getName() + " and " + players[2].getName() + "!";
+				winnerMessage += "The winners are " + players[0].getName() + " and " + players[2].getName() + "!";
 			} else {
-				winnerMessage = "The winners are " + players[1].getName() + " and " + players[2].getName() + "!";
+				winnerMessage += "The winners are " + players[1].getName() + " and " + players[2].getName() + "!";
 			}
 
 		} else {
 			//Only one winner
-			winnerMessage = "The winner is " + players[winner].getName() + "!";
+			winnerMessage += "The winner is " + players[winner].getName() + "!";
 		}
 		
 		//Need to display the winner message
@@ -421,15 +439,6 @@ public class Game {
 	private void displayMessage(String mainMessage, String secondaryMessage) {
 		gameViz.displayMessage(mainMessage, secondaryMessage);
 	}
-	
-	/*
-	 * Display a message for the players in the GUI
-	 * 
-	 * This version of this method includes a main message and a secondary message. Both should be shown.
-	 */
-	private void displayMessage(String mainMessage, String secondaryMessage) {
-		gameViz.displayMessage(mainMessage, secondaryMessage);
-	}
 
 	/*
 	 * An interface that must be implemented by a visualization of the WOJ Game
@@ -438,95 +447,7 @@ public class Game {
 		Object getWheelVizContext();
 		Object getJeopardyBoardContext();
 		Object getPlayerContext(int index);
-		void updateSpinsRemaining(int spins);
-		void displayMessage(String mainMessage, String secondaryMessage);
-		void clearAnswer();
-		void askForAnswer();
-		String getAnswer();
-		String getCategoryChoice(String playerChoosing, String playerFor, ArrayList<String> activeCategories);
-		boolean playerWantsFreeTurn();
-	}
-	
-	/*
-	 * This class uses JavaFX to create a visualization for the Wheel of JeopardyGame
-	 */
-	private class JavaFXWOJGameViz implements WOJGameViz {
-			
-		private Parent root;
-		private TextField answerField;
-		private Text spinsRemaining;
-		
-		/*
-		 * Constructor
-		 */
-		public JavaFXWOJGameViz(Parent vizRoot) {
-			root = vizRoot;
-			answerField = (TextField) root.getScene().lookup("#messagebox");
-			answerField.setOnAction(new AnswerHandler());
-			
-			spinsRemaining = (Text) root.getScene().lookup("#spinscount");
-			
-		}
-		
-		public Object getWheelVizContext() {
-			System.out.println("getting wheel viz");
-			return root.getScene().lookup("#wheelpane");	
-		}
-
-		public Object getJeopardyBoardContext() {
-			return root.getScene().lookup("#jeopardyboard");
-		}
-		
-		public Object getPlayerContext(int index) {
-			int indexForString = index + 1;
-			return root.getScene().lookup("#player" + indexForString);
-		}
-		
-		public void updateSpinsRemaining(int spins) {
-			spinsRemaining.setText(""+spins);
-		}
-		
-		public void displayMessage(String mainMessage, String secondaryMessage) {
-			
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Wheel of Jeopardy");
-			alert.setHeaderText(mainMessage);
-			alert.setContentText(secondaryMessage);
-
-			alert.showAndWait();
-			
-			//This used the TextField before we added dialogs
-			//messageField.setText(message);
-		}
-		
-		/*
-		 * Clear out the answer box to prepare for the next turn
-		 */
-		public void clearAnswer() {
-			answerField.clear();
-		}
-		
-		/*
-		 * Put the focus on the TextField where the user will type the answer.
-		 */
-		public void askForAnswer() {
-			answerField.requestFocus();
-		}
-		
-		/*
-		 * Get the answer from the TextField
-		 */
-		public String getAnswer() {
-			return answerField.getText();
-		}
-
-	/*
-	 * An interface that must be implemented by a visualization of the WOJ Game
-	 */
-	public interface WOJGameViz {
-		Object getWheelVizContext();
-		Object getJeopardyBoardContext();
-		Object getPlayerContext(int index);
+		Object getTimerContext();
 		void updateSpinsRemaining(int spins);
 		void displayMessage(String mainMessage, String secondaryMessage);
 		void clearAnswer();
@@ -553,13 +474,13 @@ public class Game {
 			root = vizRoot;
 			answerField = (TextField) root.getScene().lookup("#messagebox");
 			answerField.setOnAction(new AnswerHandler());
+			answerField.setDisable(true);
 			
 			spinsRemaining = (Text) root.getScene().lookup("#spinscount");
 			
 		}
 		
 		public Object getWheelVizContext() {
-			System.out.println("getting wheel viz");
 			return root.getScene().lookup("#wheelpane");	
 		}
 
@@ -572,6 +493,10 @@ public class Game {
 			return root.getScene().lookup("#player" + indexForString);
 		}
 		
+		public Object getTimerContext() {
+			return root.getScene().lookup("#timer");
+		}
+		
 		public void updateSpinsRemaining(int spins) {
 			spinsRemaining.setText(""+spins);
 		}
@@ -581,8 +506,8 @@ public class Game {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Wheel of Jeopardy");
 			alert.setHeaderText(mainMessage);
-			alert.setContentText(secondaryMessage);
-
+			alert.setContentText(secondaryMessage);			
+			alert.getDialogPane().setStyle("-fx-font-size: 22px; -fx-font-weight: bold");
 			alert.showAndWait();
 			
 			//This used the TextField before we added dialogs
@@ -594,12 +519,14 @@ public class Game {
 		 */
 		public void clearAnswer() {
 			answerField.clear();
+			answerField.setDisable(true);
 		}
 		
 		/*
 		 * Put the focus on the TextField where the user will type the answer.
 		 */
 		public void askForAnswer() {
+			answerField.setDisable(false);
 			answerField.requestFocus();
 		}
 		
@@ -625,6 +552,7 @@ public class Game {
 			//Create a dialog box with a button for each of the active categories
 			Alert catChoiceBox = new Alert(AlertType.CONFIRMATION);
 			catChoiceBox.setTitle("Wheel of Jeopardy");
+			catChoiceBox.getDialogPane().setStyle("-fx-font-size: 16px; -fx-font-weight: bold");
 			if (playerChoosing.equals(playerFor)) {
 				catChoiceBox.setHeaderText(playerChoosing + ", please choose a category.");
 			}
@@ -646,8 +574,6 @@ public class Game {
 			
 			String chosen = activeCategories.get(buttonList.indexOf(result.get()));
 			
-			System.out.println(chosen + " category was chosen");
-			
 			return chosen;
 		}
 		
@@ -658,6 +584,7 @@ public class Game {
 		public boolean playerWantsFreeTurn() {
 			Alert freeTurnBox = new Alert(AlertType.CONFIRMATION);
 			freeTurnBox.setTitle("Wheel of Jeopardy");
+			freeTurnBox.getDialogPane().setStyle("-fx-font-size: 22px; -fx-font-weight: bold");
 			
 			String headerText = "";
 			String contentText = "";
@@ -697,6 +624,7 @@ public class Game {
 			closeEnoughBox.setTitle("Wheel of Jeopardy");
 			closeEnoughBox.setHeaderText("Sorry that is incorrect. The correct answer was \"" + answer + "\"");
 			closeEnoughBox.setContentText("Was that answer close enough to be counted as correct?");
+			closeEnoughBox.getDialogPane().setStyle("-fx-font-size: 22px; -fx-font-weight: bold");
 			ButtonType noButton = new ButtonType("No");
 			ButtonType yesButton = new ButtonType("Yes");
 			
@@ -710,6 +638,7 @@ public class Game {
 			else {
 				return false;
 			}
-		}		
+		}
+		
 	}
 }

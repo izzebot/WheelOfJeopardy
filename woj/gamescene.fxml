@@ -49,7 +49,7 @@
     		-->
     	</StackPane>
     </HBox>
-    <VBox id="mainbottom" alignment="center" spacing="50">
+    <VBox id="mainbottom" alignment="center" spacing="40">
     	<HBox id="messageandtimer" alignment="center" spacing="20">
     		<TextField fx:id="messagebox" prefWidth="1000" prefHeight="75">
     			<font><Font size="30"/></font>

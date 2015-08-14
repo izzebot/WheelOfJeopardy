@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -40,7 +39,6 @@ public class JeopardyBoard {
 		//Repeat six times, once for each category
 		for (int catNumber = 1; catNumber <= 6; catNumber++) {
 			String catName = inFile.nextLine().trim().toUpperCase();
-			System.out.println(catName);
 			
 			ArrayList<BoardItem> items = new ArrayList<BoardItem>(5);
 			int pointValueBase = 100;
@@ -49,8 +47,6 @@ public class JeopardyBoard {
 			for (int itemNumber = 1; itemNumber <= 5; itemNumber++) {
 				//One line contains an answer and question
 				String line = inFile.nextLine();
-				
-				System.out.println(line);
 				
 				//The answer and question can be split at the "?"
 				String[] fields = line.split("\\?");
@@ -71,7 +67,6 @@ public class JeopardyBoard {
 			//read in the blank line
 			if (inFile.hasNextLine()) {
 				String blankLine = inFile.nextLine();
-				System.out.println(blankLine);
 			}
 		}
 		
@@ -158,7 +153,7 @@ public class JeopardyBoard {
 	 */
 	interface JeopardyBoardViz {
 		public void showQuestion(String question);
-		public void showGrid();		
+		public void showGrid();	
 	}
 	
 	/*
@@ -169,8 +164,11 @@ public class JeopardyBoard {
 		private StackPane mainBoardPane;
 		private GridPane gridPane;
 		private Button questionText;
+		private Button[] categoryButtons;
+		private Button[][] itemButtons;
 
-		public JavaFXJeopardyBoardViz(Object pane) {
+		public JavaFXJeopardyBoardViz(Object pane) {		
+			
 			mainBoardPane = (StackPane) pane;
 			mainBoardPane.getChildren().clear();
 			
@@ -181,7 +179,6 @@ public class JeopardyBoard {
 			questionText = new Button("");
 			mainBoardPane.getChildren().addAll(gridPane, questionText);
 			
-			System.out.println("StackPane contents after adding all: " + mainBoardPane.getChildren().toString());
 			gridPane.toString();
 			
 			questionText.setMaxWidth(Double.MAX_VALUE);
@@ -208,9 +205,9 @@ public class JeopardyBoard {
 				gridPane.getRowConstraints().add(rowConstraint);
 			}			
 			
-			Button[] categoryButtons = new Button[6];
+			categoryButtons = new Button[6];
 			
-			Button[][] itemButtons = new Button[5][6];
+			itemButtons = new Button[5][6];
 			
 			//Add buttons for category titles
 			for (int categoryIndex = 0; categoryIndex <= 5; categoryIndex++) {
@@ -235,13 +232,11 @@ public class JeopardyBoard {
 				
 			}
 			
-			System.out.println("GridPane after adding new items: " +  gridPane.getChildren().toString());
-			
-
 		}
 		
 		@Override
 		public void showQuestion(String question) {
+			
 			//Hide the grid 
 			gridPane.setVisible(false);
 			
@@ -256,9 +251,8 @@ public class JeopardyBoard {
 			questionText.setVisible(false);
 			gridPane.setVisible(true);
 			
+			
 		}
-
-
 		
 	}
 	
