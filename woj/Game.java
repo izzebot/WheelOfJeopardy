@@ -80,7 +80,7 @@ public class Game {
 		
 		wheel = new Wheel(board.getCategoryNames(), gameViz.getWheelVizContext(), new SpinHandler());
 		
-		spinsRemaining = 10;
+		spinsRemaining = 50;
 		gameViz.updateSpinsRemaining(spinsRemaining);
 		
 		//Clear everybody's round points
