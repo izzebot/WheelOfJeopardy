@@ -3,17 +3,20 @@ Wheel of Jeopardy Game Repository
 
 Pending tasks in order of importance:
 
--Add the timer functionality.
+-Blackbox testing for the current version
 
--Add the intro scene for letting the player's enter names
+Optional tasks to prioritize:
 
-Optional(?) tasks:
+-Add a nice background image to the title screen
+
+-Set the window size to be fixed (so it cannot be altered)
+
+Optional tasks that will probably not be implemented for now:
 
 -Add a visual in the player viz for showing how many free turns are currently held
 
 -Highlight or animate the category or item in the JeopardyBoard that has been selected for the next question
 
--Close enough button for when the player's agree that the answer typed was close enough to be counted as correct
 
 
 
