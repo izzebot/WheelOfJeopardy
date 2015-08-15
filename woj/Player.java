@@ -64,6 +64,7 @@ public class Player {
 	 */
 	public void updateFreeTurns(int numberToAdd) {
 		freeTurns += numberToAdd;
+		playerViz.updateDisplayFreeTurns(freeTurns);
 	}
 	
 	public String getName() {
@@ -103,6 +104,7 @@ public class Player {
 		void showPlayerActive();
 		void removePlayerActive();
 		void updateScore(int roundPoints);
+		void updateDisplayFreeTurns(int numberToAdd);
 	}
 	
 	/*
@@ -114,6 +116,7 @@ public class Player {
 		private VBox playerBox;
 		private Button playerNameText;
 		private Button playerScore;
+		private Button playerFreeTurns;
 		
 		/* 
 		 * Constructor
@@ -130,6 +133,15 @@ public class Player {
 			playerScore.setPrefWidth(180);
 			playerScore.setText("0");
 			
+			playerFreeTurns = (Button) playerBox.getChildren().get(2);
+			playerFreeTurns.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
+			playerFreeTurns.setPrefWidth(180);
+			playerFreeTurns.setText("Free Turns: "+ "0");
+			
+		}
+		@Override
+		public void updateDisplayFreeTurns(int freeTurns) {
+			playerFreeTurns.setText("Free Turns: "+ freeTurns);
 		}
 		
 		@Override

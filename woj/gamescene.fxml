@@ -69,17 +69,23 @@
     			</Button>
     			<Button fx:id="player1score">
     			</Button>
+    			<Button fx:id="player1freeturns">
+    			</Button>
     		</VBox>
     		<VBox id="player2" spacing="5" alignment="center">
     			<Button fx:id="player2name">
     			</Button>
     			<Button fx:id="player2score">
     			</Button>
+    			<Button fx:id="player2freeturns">
+    			</Button>    			
     		</VBox>
     		<VBox id="player3" spacing="5" alignment="center">
     			<Button fx:id="player3name">
     			</Button>
     			<Button fx:id="player3score">
+    			</Button>
+      			<Button fx:id="player3freeturns">
     			</Button>
     		</VBox>
     	</HBox>
