@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.text.Text;
 
@@ -31,6 +32,7 @@ public class Game {
 	private GameTimer timer;
 	private WOJGameViz gameViz;
 	private int dailyDoubleCount;
+	private int dailyDoubleAmount;
 	private boolean dailyDouble;
 	
 	public Game(String[] names, Parent root) {
@@ -50,6 +52,7 @@ public class Game {
 		spinsRemaining = 50;
 		itemsRemaining = 30;
 		dailyDoubleCount = 2;
+		dailyDoubleAmount = 0;
 		dailyDouble = false;
 		timer = new GameTimer(30, gameViz.getTimerContext(), new AnswerHandler());
 		
@@ -91,6 +94,7 @@ public class Game {
 		itemsRemaining = 30;
 		gameViz.updateSpinsRemaining(spinsRemaining);
 		dailyDoubleCount = 2;
+		dailyDoubleAmount = 0;
 		dailyDouble = false;
 		
 		//Clear everybody's round points
@@ -175,7 +179,9 @@ public class Game {
 				//dailyDouble check per Round
 				if(dailyDoubleCount > 0 && itemsRemaining <= 2){
 					dailyDouble = true;
-					displayMessage("Daily Double!");
+					System.out.println("should be daily double");
+					dailyDouble();
+					System.out.println(dailyDoubleAmount);
 					dailyDoubleCount--;
 				}
 				
@@ -186,7 +192,9 @@ public class Game {
 						
 						if(chance == 2){
 							dailyDouble = true;
-							displayMessage("Daily Double!");
+							System.out.println("should be daily double");
+							dailyDouble();
+							System.out.println(dailyDoubleAmount);
 							dailyDoubleCount--;
 						}
 					}
@@ -273,7 +281,7 @@ public class Game {
 	 */
 	private void processAnswer(String playerAnswer) {
 		timer.cancel();
-		
+		itemsRemaining--;
 		playerAnswer = playerAnswer.trim().toUpperCase();
 		
 		boolean correct = false;
@@ -281,8 +289,8 @@ public class Game {
 		if (currentItem.getAnswer().equals(playerAnswer)) {
 			//Tell the player that the answer is correct
 			if (dailyDouble){
-				displayMessage("Correct!", "You earned " + currentItem.getPointValue()*2 + " points!");
-				players[whoseTurn].updatePoints(currentItem.getPointValue()*2);
+				displayMessage("Correct!", "You earned " + dailyDoubleAmount + " points!");
+				players[whoseTurn].updatePoints(dailyDoubleAmount);
 				dailyDouble = false;
 			}
 			else{
@@ -304,7 +312,7 @@ public class Game {
 			
 			if (closeEnough) {
 				if(dailyDouble){
-					players[whoseTurn].updatePoints(currentItem.getPointValue()*2);
+					players[whoseTurn].updatePoints(dailyDoubleAmount);
 					dailyDouble = false;
 				}
 				else{
@@ -314,7 +322,7 @@ public class Game {
 			}
 			else {
 				if(dailyDouble){
-					players[whoseTurn].updatePoints(0-currentItem.getPointValue()*2);
+					players[whoseTurn].updatePoints(0-dailyDoubleAmount);
 					dailyDouble = false;
 				}
 				else{
@@ -342,6 +350,7 @@ public class Game {
 			checkForFreeTurn();
 		}
 		
+		dailyDoubleAmount = 0;
 	}
 	
 	/*
@@ -471,7 +480,33 @@ public class Game {
 		return winnerMessage;
 		
 	}
-	
+	public int dailyDouble(){
+		TextInputDialog dialog = new TextInputDialog("5");
+		dialog.setTitle("Daily Double!");
+		
+		if (players[whoseTurn].getTotalPoints() < currentItem.getPointValue()){
+			dialog.setHeaderText("How much would you like to wager? It must be between 5 and " + currentItem.getPointValue());
+		}
+		else{
+			dialog.setHeaderText("How much would you like to wager? It must be between 5 and " + players[whoseTurn].getTotalPoints());
+		}
+		dialog.setContentText("Enter your wager here:" );
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+		    dailyDoubleAmount = Integer.parseInt(result.get());
+		    if (players[whoseTurn].getTotalPoints() < currentItem.getPointValue()){
+			    if (dailyDoubleAmount > currentItem.getPointValue()){
+			    	displayMessage("that is too high! Try again");
+			    	dailyDouble();
+			    }
+		    }
+		    else if (dailyDoubleAmount > players[whoseTurn].getTotalPoints() && players[whoseTurn].getTotalPoints() > 5){
+		    	displayMessage("that is too high! Try again");
+		    	dailyDouble();
+		    }
+		}
+		return dailyDoubleAmount;
+	}
 	/*
 	 * Display a message for the players in the GUI
 	 * 
@@ -689,6 +724,6 @@ public class Game {
 				return false;
 			}
 		}
-		
+
 	}
 }
