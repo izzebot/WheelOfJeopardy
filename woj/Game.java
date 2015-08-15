@@ -3,6 +3,7 @@ package woj;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,9 +26,12 @@ public class Game {
 	private int whoseTurn;
 	private int round;
 	private int spinsRemaining;
+	private int itemsRemaining;
 	private BoardItem currentItem;
 	private GameTimer timer;
 	private WOJGameViz gameViz;
+	private int dailyDoubleCount;
+	private boolean dailyDouble;
 	
 	public Game(String[] names, Parent root) {
 		gameViz = new JavaFXWOJGameViz(root);
@@ -44,6 +48,9 @@ public class Game {
 		
 		round = 1;
 		spinsRemaining = 50;
+		itemsRemaining = 30;
+		dailyDoubleCount = 2;
+		dailyDouble = false;
 		timer = new GameTimer(30, gameViz.getTimerContext(), new AnswerHandler());
 		
 		gameViz.updateSpinsRemaining(spinsRemaining);
@@ -81,7 +88,10 @@ public class Game {
 		wheel = new Wheel(board.getCategoryNames(), gameViz.getWheelVizContext(), new SpinHandler());
 		
 		spinsRemaining = 50;
+		itemsRemaining = 30;
 		gameViz.updateSpinsRemaining(spinsRemaining);
+		dailyDoubleCount = 2;
+		dailyDouble = false;
 		
 		//Clear everybody's round points
 		for (Player player : players) {
@@ -161,6 +171,26 @@ public class Game {
 				
 				//Highlight the category in the JeopardyBoard? (Animation or Effect?)
 				//To be implemented if time allows
+				
+				//dailyDouble check per Round
+				if(dailyDoubleCount > 0 && itemsRemaining <= 2){
+					dailyDouble = true;
+					displayMessage("Daily Double!");
+					dailyDoubleCount--;
+				}
+				
+				else{
+					if(dailyDoubleCount > 0 && itemsRemaining > 2){
+						Random rn = new Random();
+						int chance = rn.nextInt(10 - 1 + 1) + 1;
+						
+						if(chance == 2){
+							dailyDouble = true;
+							displayMessage("Daily Double!");
+							dailyDoubleCount--;
+						}
+					}
+				}
 				
 				//Store the current Board Item so it can be used when processing the answer
 				currentItem = board.getItem(category);
@@ -250,8 +280,16 @@ public class Game {
 		
 		if (currentItem.getAnswer().equals(playerAnswer)) {
 			//Tell the player that the answer is correct
-			displayMessage("Correct!", "You earned " + currentItem.getPointValue() + " points!");
-			players[whoseTurn].updatePoints(currentItem.getPointValue());
+			if (dailyDouble){
+				displayMessage("Correct!", "You earned " + currentItem.getPointValue()*2 + " points!");
+				players[whoseTurn].updatePoints(currentItem.getPointValue()*2);
+				dailyDouble = false;
+			}
+			else{
+				displayMessage("Correct!", "You earned " + currentItem.getPointValue() + " points!");
+				players[whoseTurn].updatePoints(currentItem.getPointValue());
+			}
+			
 			correct = true;
 		}
 		else if (playerAnswer.length() == 0) {
@@ -265,11 +303,23 @@ public class Game {
 			boolean closeEnough = gameViz.closeEnough(currentItem.getAnswer());
 			
 			if (closeEnough) {
-				players[whoseTurn].updatePoints(currentItem.getPointValue());
+				if(dailyDouble){
+					players[whoseTurn].updatePoints(currentItem.getPointValue()*2);
+					dailyDouble = false;
+				}
+				else{
+					players[whoseTurn].updatePoints(currentItem.getPointValue());
+				}
 				correct = true;
 			}
 			else {
-				players[whoseTurn].updatePoints(0-currentItem.getPointValue());
+				if(dailyDouble){
+					players[whoseTurn].updatePoints(0-currentItem.getPointValue()*2);
+					dailyDouble = false;
+				}
+				else{
+					players[whoseTurn].updatePoints(0-currentItem.getPointValue());
+				}
 			}
 			
 		}
