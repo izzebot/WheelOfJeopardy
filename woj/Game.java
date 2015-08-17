@@ -251,6 +251,10 @@ public class Game {
 				//Ask if the current player wants to use a free turn
 				if (gameViz.playerWantsFreeTurn()) {
 					players[whoseTurn].updateFreeTurns(-1);
+					int spinResult = wheel.getCurrentSector();
+					if(spinResult != Wheel.LOSE_TURN){
+						players[whoseTurn].updatePoints(currentItem.getPointValue());
+					}
 					beginPlayerTurn();
 				}
 				else {
@@ -280,6 +284,9 @@ public class Game {
 	 * Return true if answered correctly. Otherwise return false.
 	 */
 	private void processAnswer(String playerAnswer) {
+		if(timer.isElapsed()){
+			playerAnswer = " ";
+		}
 		timer.cancel();
 		itemsRemaining--;
 		playerAnswer = playerAnswer.trim().toUpperCase();
@@ -482,6 +489,7 @@ public class Game {
 	}
 	public int dailyDouble(){
 		TextInputDialog dialog = new TextInputDialog("5");
+		dialog.getDialogPane().setStyle("-fx-font-size: 22px; -fx-font-weight: bold");
 		dialog.setTitle("Daily Double!");
 		
 		if (players[whoseTurn].getTotalPoints() < currentItem.getPointValue()){

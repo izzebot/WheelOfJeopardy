@@ -41,7 +41,7 @@ public class WOJTestCode extends Application {
         playButton.setStyle("-fx-text-fill: gold; -fx-font-size: 26px; -fx-font-weight: bold; -fx-background-color: #0000FF;");
         
         stage.setTitle("Wheel of Jeopardy");
-        stage.setScene(new Scene(root, 1200, 800));
+        stage.setScene(new Scene(root, 1400, 1000));
         stage.show();
 		
 	}
@@ -79,7 +79,7 @@ public class WOJTestCode extends Application {
 			
 			title.setStyle("-fx-font-size: 50px; -fx-fill: #818181; -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 )");
 			
-			Scene mainScene = new Scene(root, 1200, 800);
+			Scene mainScene = new Scene(root, 1400, 1000);
 			stage.setScene(mainScene);
 			
 			String[] names = new String[3];
